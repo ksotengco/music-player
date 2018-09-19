@@ -14,9 +14,10 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            app:titleTextColor="#000000"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#00FF00"
+            android:background="#0000CF"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -29,6 +30,28 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/current_song_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="32dp"
+            android:text="Current Song: "/>
+
+        <TextView
+            android:id="@+id/next_song_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/current_song_text"
+            android:textSize="24sp"
+            android:text="Next song: "/>
+
+        <ListView
+            android:id="@+id/song_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_below="@id/next_song_text"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -62,10 +85,37 @@
             app:srcCompat="@drawable/skip_button"
             android:onClick="testClick"/>
 
-        <SeekBar
+        <TextView
+            android:id="@+id/helper_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/play_button"/>
+            android:layout_height="wrap_content"
+            android:text="AAAAAAAAAAAAAAAAAAAAAAAA"
+            android:visibility="invisible"
+            android:layout_below="@+id/play_button"/>
+        <TextView
+            android:id="@+id/time_passed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0:00"
+            android:textSize="16dp"
+            android:layout_below="@id/helper_text"/>
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="wrap_content"
+            android:layout_height="24dp"
+            android:layout_below="@id/helper_text"
+            android:layout_toEndOf="@id/time_passed"
+            android:layout_toStartOf="@id/time_left" />
+
+        <TextView
+            android:id="@+id/time_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0:00"
+            android:textSize="16dp"
+            android:layout_below="@id/helper_text"
+            android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
 
