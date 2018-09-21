@@ -1,13 +1,22 @@
 package musicplayer.cs371m.musicplayer;
 
+import android.media.Image;
+import android.media.MediaPlayer;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +24,17 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     static private ArrayList<Song> songList = new ArrayList<>();
     private ListView listView;
+
+    private SongManager manager = new Song();
+    private Song currentSong;
+    private Song nextSong;
+
+    private TextView currentSongText;
+    private TextView nextSongText;
+
+    private ImageButton playPauseButton;
+
+    final private int songSize = songList.size();
 
     static {
         songList.add(new Song("Fur Elise", R.raw.fur_elise));
@@ -37,12 +57,45 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        currentSongText = (TextView) findViewById(R.id.current_song_text);
+        nextSongText    = (TextView) findViewById(R.id.next_song_text);
+
+        playPauseButton = (ImageButton) findViewById(R.id.play_button);
+
         listView = (ListView) findViewById(R.id.song_list);
 
         final SongAdapter adapter = new SongAdapter(getApplicationContext());
         adapter.addAll(songList);
 
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                currentSong = songList.get(i);
+                if (i == songSize - 1) {
+                    nextSong = songList.get(0);
+                } else {
+                    nextSong = songList.get(i+1);
+                }
+
+                currentSongText.setText("Current Song: " +  currentSong.getSongTitle());
+                nextSongText.setText("Next Song: " + nextSong.getSongTitle());
+
+                currentSong.playSong(getApplicationContext());
+
+                playPauseButton.setImageResource(R.drawable.pause_button);
+            }
+        });
+    }
+
+    public void pausePlay (View view) {
+        manager.updateSong(view);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        manager.stopSong();
     }
 
     // Taken from Demo repo code

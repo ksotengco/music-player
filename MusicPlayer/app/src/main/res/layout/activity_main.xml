@@ -14,10 +14,10 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            app:titleTextColor="#000000"
+            app:titleTextColor="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#0000CF"
+            android:background="#282828"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
@@ -28,21 +28,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="#202020">
 
         <TextView
             android:id="@+id/current_song_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="32dp"
+            android:textColor="#FFFFFF"
+            android:textSize="24dp"
             android:text="Current Song: "/>
 
         <TextView
             android:id="@+id/next_song_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/current_song_text"
-            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
             android:text="Next song: "/>
 
         <ListView
@@ -57,7 +60,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2">
+        android:layout_weight="2"
+        android:background="#282828">
 
         <ImageButton
             android:id="@+id/skip_back_button"
@@ -74,6 +78,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:layout_centerHorizontal="true"
+            android:onClick="pausePlay"
             app:srcCompat="@drawable/play_button" />
 
         <ImageButton
@@ -98,6 +103,7 @@
             android:layout_height="wrap_content"
             android:text="0:00"
             android:textSize="16dp"
+            android:textColor="#FFFFFF"
             android:layout_below="@id/helper_text"/>
 
         <SeekBar
@@ -106,7 +112,8 @@
             android:layout_height="24dp"
             android:layout_below="@id/helper_text"
             android:layout_toEndOf="@id/time_passed"
-            android:layout_toStartOf="@id/time_left" />
+            android:layout_toStartOf="@id/time_left"
+            android:thumbTint="#FFFFFF"/>
 
         <TextView
             android:id="@+id/time_left"
@@ -114,6 +121,7 @@
             android:layout_height="wrap_content"
             android:text="0:00"
             android:textSize="16dp"
+            android:textColor="#FFFFFF"
             android:layout_below="@id/helper_text"
             android:layout_alignParentEnd="true"/>
 
