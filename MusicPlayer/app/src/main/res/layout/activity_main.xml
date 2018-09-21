@@ -35,6 +35,7 @@
             android:id="@+id/current_song_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="24dp"
             android:text="Current Song: "/>
@@ -44,6 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/current_song_text"
+            android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="16dp"
             android:text="Next song: "/>
@@ -70,6 +72,7 @@
             android:background="@null"
             android:rotation="180"
             android:layout_alignParentStart="true"
+            android:onClick="skipBackward"
             app:srcCompat="@drawable/skip_button" />
 
         <ImageButton
@@ -87,8 +90,8 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:layout_alignParentEnd="true"
-            app:srcCompat="@drawable/skip_button"
-            android:onClick="testClick"/>
+            android:onClick="skipForward"
+            app:srcCompat="@drawable/skip_button" />
 
         <TextView
             android:id="@+id/helper_text"

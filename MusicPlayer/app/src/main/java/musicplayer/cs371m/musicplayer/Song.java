@@ -17,9 +17,7 @@ public class Song implements SongManager {
     private boolean isPaused;
 
     private static MediaPlayer songPlayer = null;
-    private static Song currentSong;
 
-    public Song () { }
     public Song (String title, int id) {
         songTitle = title;
         songID = id;
@@ -33,20 +31,20 @@ public class Song implements SongManager {
         }
         songPlayer = MediaPlayer.create(context, songID);
         songPlayer.start();
-        currentSong = this;
+        isPaused = true;
     }
 
     public void updateSong(View view) {
-        if (songPlayer != null && currentSong != null) {
+        if (songPlayer != null) {
             ImageButton playPauseButton = (ImageButton)  view.findViewById(R.id.play_button);
-            if (!currentSong.isPaused) {
+            if (isPaused) {
                 songPlayer.pause();
                 playPauseButton.setImageResource(R.drawable.play_button);
             } else {
                 songPlayer.start();
                 playPauseButton.setImageResource(R.drawable.pause_button);
             }
-            currentSong.isPaused = !currentSong.isPaused;
+            isPaused = !isPaused;
         }
     }
 

@@ -1,8 +1,5 @@
 package musicplayer.cs371m.musicplayer;
 
-import android.media.Image;
-import android.media.MediaPlayer;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -10,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,9 +21,10 @@ public class MainActivity extends AppCompatActivity {
     static private ArrayList<Song> songList = new ArrayList<>();
     private ListView listView;
 
-    private SongManager manager = new Song();
+    private SongManager manager;
     private Song currentSong;
     private Song nextSong;
+    private Song prevSong;
 
     private TextView currentSongText;
     private TextView nextSongText;
@@ -62,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         playPauseButton = (ImageButton) findViewById(R.id.play_button);
 
+        play(0);
+
         listView = (ListView) findViewById(R.id.song_list);
 
         final SongAdapter adapter = new SongAdapter(getApplicationContext());
@@ -71,31 +70,62 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                currentSong = songList.get(i);
-                if (i == songSize - 1) {
-                    nextSong = songList.get(0);
-                } else {
-                    nextSong = songList.get(i+1);
-                }
-
-                currentSongText.setText("Current Song: " +  currentSong.getSongTitle());
-                nextSongText.setText("Next Song: " + nextSong.getSongTitle());
-
-                currentSong.playSong(getApplicationContext());
-
-                playPauseButton.setImageResource(R.drawable.pause_button);
+                play(i);
             }
         });
     }
 
+    public void play (int songNum) {
+        currentSong = songList.get(songNum);
+        manager = currentSong;
+
+        if (songNum == songSize - 1) {
+            nextSong = songList.get(0);
+        } else {
+            nextSong = songList.get(songNum + 1);
+        }
+
+        if (songNum == 0) {
+            prevSong = songList.get(songSize - 1);
+        } else {
+            prevSong = songList.get(songNum - 1);
+        }
+
+        currentSongText.setText("Current Song: " +  currentSong.getSongTitle());
+        nextSongText.setText("Next Song: " + nextSong.getSongTitle());
+
+        currentSong.playSong(getApplicationContext());
+        playPauseButton.setImageResource(R.drawable.pause_button);
+    }
+
     public void pausePlay (View view) {
-        manager.updateSong(view);
+        if (currentSong != null) {
+            System.out.println("Click");
+            manager.updateSong(view);
+        }
+    }
+
+    public void skipForward(View view) {
+        play(songList.indexOf(nextSong));
+    }
+
+    public void skipBackward(View view) {
+        play(songList.indexOf(prevSong));
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        manager.stopSong();
+        if (currentSong != null) {
+            manager.stopSong();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        currentSong.playSong(getApplicationContext());
+        playPauseButton.setImageResource(R.drawable.pause_button);
     }
 
     // Taken from Demo repo code
@@ -115,9 +145,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void testClick(View view) {
-        Toast.makeText(this, "lets go", Toast.LENGTH_SHORT).show();
     }
 }
