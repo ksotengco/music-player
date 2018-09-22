@@ -17,11 +17,18 @@ public class Song implements SongManager {
     private boolean isPaused;
 
     private static MediaPlayer songPlayer = null;
+    private static MainActivity callback;
 
     public Song (String title, int id) {
         songTitle = title;
         songID = id;
         isPaused = false;
+    }
+
+    // could not think of any other way to do this
+    // should only be called once
+    public void initActivity (MainActivity cb) {
+        callback = cb;
     }
 
     public void playSong(Context context) {
@@ -32,6 +39,14 @@ public class Song implements SongManager {
         songPlayer = MediaPlayer.create(context, songID);
         songPlayer.start();
         isPaused = false;
+
+        songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                System.out.println("finished playing");
+                callback.nextSong();
+            }
+        });
     }
 
     public void updateSong(View view) {
@@ -46,13 +61,6 @@ public class Song implements SongManager {
             }
             isPaused = !isPaused;
         }
-
-        songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                System.out.println("finished playing");
-            }
-        });
     }
 
     public void changeProgress (int progress) {

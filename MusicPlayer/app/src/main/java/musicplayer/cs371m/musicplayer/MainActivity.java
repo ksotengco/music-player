@@ -15,13 +15,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-interface skip {
-    void skipForward();
-    void skipBackward();
-}
-
 public class MainActivity extends AppCompatActivity
-                          implements TimeElaspedHandler.IUpdate, skip {
+                          implements TimeElaspedHandler.IUpdate {
     static private ArrayList<Song> songList = new ArrayList<>();
     private ListView listView;
 
@@ -63,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         init();
         play(0);
 
+        currentSong.initActivity(this);
         listView = (ListView) findViewById(R.id.song_list);
 
         final SongAdapter adapter = new SongAdapter(getApplicationContext());
@@ -178,14 +174,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void skipForward() {
+    public void nextSong() {
         if (nextSong != null) {
             handler.stopHandler();
             play(songList.indexOf(nextSong));
         }
     }
 
-    public void skipBackward() {
+    // for the OnCompletion method
+    public void skipForward(View view) {
+        nextSong();
+    }
+
+    public void skipBackward(View view) {
         if (prevSong != null) {
             handler.stopHandler();
             play(songList.indexOf(prevSong));
