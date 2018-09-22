@@ -1,5 +1,6 @@
 package musicplayer.cs371m.musicplayer;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -34,9 +35,9 @@ public class MainActivity extends AppCompatActivity
 
     // SeekBar functionality: https://stackoverflow.com/questions/17168215/seekbar-and-media-player-in-android
     private SeekBar seekBar;
-
     private ImageButton playPauseButton;
 
+    private boolean loop;
     final private int songSize = songList.size();
 
     static {
@@ -79,6 +80,8 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        loop = false;
 
         currentSongText = (TextView) findViewById(R.id.current_song_text);
         nextSongText    = (TextView) findViewById(R.id.next_song_text);
@@ -168,12 +171,12 @@ public class MainActivity extends AppCompatActivity
 
     public void pausePlay (View view) {
         if (currentSong != null) {
-            System.out.println("Click");
             handler.togglePause();
             manager.updateSong(view);
         }
     }
 
+    // for the OnCompletion method
     public void nextSong() {
         if (nextSong != null) {
             handler.stopHandler();
@@ -181,7 +184,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // for the OnCompletion method
     public void skipForward(View view) {
         nextSong();
     }
@@ -193,11 +195,22 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public boolean toLoop () { return loop; }
+
     @Override
     protected void onStop() {
         super.onStop();
         if (currentSong != null) {
-            System.out.println("leaving");
+            handler.togglePause();
+            currentSong.pauseSong();
+            playPauseButton.setImageResource(R.drawable.play_button);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (currentSong != null) {
             manager.stopSong();
         }
     }
@@ -205,8 +218,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestart() {
         super.onRestart();
-        currentSong.playSong(getApplicationContext());
-        playPauseButton.setImageResource(R.drawable.pause_button);
+        if (currentSong != null) {
+            handler.togglePause();
+            currentSong.playSong();
+            playPauseButton.setImageResource(R.drawable.pause_button);
+        }
     }
 
     // Taken from Demo repo code
@@ -222,9 +238,25 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.settings) {
-            // TODO: add settings intent
+            Intent settings = new Intent(this, Settings.class);
+            Bundle toLoop = new Bundle();
+
+            toLoop.putBoolean("loop?", loop);
+            settings.putExtras(toLoop);
+
+            final int result = 1;
+            startActivityForResult(settings, result);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            loop = data.getBooleanExtra("loop?", loop);
+        }
     }
 }

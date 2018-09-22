@@ -8,6 +8,8 @@ import android.widget.ImageButton;
 interface SongManager {
     void playSong(Context context);
     void updateSong(View view);
+    void playSong();
+    void pauseSong();
     void stopSong();
 }
 
@@ -33,7 +35,6 @@ public class Song implements SongManager {
 
     public void playSong(Context context) {
         if (songPlayer != null) {
-            System.out.println("freeing");
             stopSong();
         }
         songPlayer = MediaPlayer.create(context, songID);
@@ -43,8 +44,11 @@ public class Song implements SongManager {
         songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                System.out.println("finished playing");
-                callback.nextSong();
+                if (callback.toLoop()) {
+                    playSong();
+                } else {
+                    callback.nextSong();
+                }
             }
         });
     }
@@ -53,14 +57,22 @@ public class Song implements SongManager {
         if (songPlayer != null) {
             ImageButton playPauseButton = (ImageButton)  view.findViewById(R.id.play_button);
             if (isPaused) {
-                songPlayer.start();
+                playSong();
                 playPauseButton.setImageResource(R.drawable.pause_button);
             } else {
-                songPlayer.pause();
+                pauseSong();
                 playPauseButton.setImageResource(R.drawable.play_button);
             }
             isPaused = !isPaused;
         }
+    }
+
+    public void playSong () {
+        songPlayer.start();
+    }
+
+    public void pauseSong () {
+        songPlayer.pause();
     }
 
     public void changeProgress (int progress) {
