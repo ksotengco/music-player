@@ -9,16 +9,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.List;
+
+interface skip {
+    void skipForward();
+    void skipBackward();
+}
 
 public class MainActivity extends AppCompatActivity
-                          implements TimeElaspedHandler.IUpdate {
+                          implements TimeElaspedHandler.IUpdate, skip {
     static private ArrayList<Song> songList = new ArrayList<>();
     private ListView listView;
 
@@ -31,7 +34,11 @@ public class MainActivity extends AppCompatActivity
     private TextView nextSongText;
 
     private TextView timeElasped;
+    private TextView timeLeft;
     private TimeElaspedHandler handler;
+
+    // SeekBar functionality: https://stackoverflow.com/questions/17168215/seekbar-and-media-player-in-android
+    private SeekBar seekBar;
 
     private ImageButton playPauseButton;
 
@@ -65,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                handler.stopHandler();
                 play(i);
             }
         });
@@ -82,18 +90,55 @@ public class MainActivity extends AppCompatActivity
         playPauseButton = (ImageButton) findViewById(R.id.play_button);
 
         timeElasped     = (TextView) findViewById(R.id.time_passed);
+        timeLeft        = (TextView) findViewById(R.id.time_left);
+
+        seekBar         = (SeekBar) findViewById(R.id.seekbar);
+
+        // StackOverflow link above next to SeekBar declaration
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean fromUser) {
+                if (currentSong != null && fromUser) {
+                    currentSong.changeProgress(i);
+                    final int minutes = i/60;
+                    final int seconds = i%60;
+
+                    final int minutesLeft = (currentSong.getDuration() - i)/60;
+                    final int secondsLeft = (currentSong.getDuration() - i)%60;
+
+                    // change the time elapsed/time left based on SeekBar progress
+                    timeElasped.setText(String.format("%02d:%02d", minutes, seconds));
+                    timeLeft.setText(String.format("%02d:%02d", minutesLeft, secondsLeft));
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
     }
 
     public void updateTimeElasped(final int timeValue) {
         final int minutes = timeValue/60;
         final int seconds = timeValue%60;
+
+        final int minutesLeft = (currentSong.getDuration() - timeValue)/60;
+        final int secondsLeft = (currentSong.getDuration() - timeValue)%60;
+
         if (false) {
             timeElasped.setText(String.format("%02d:%02d", minutes, seconds));
+            timeLeft.setText(String.format("%02d:%02d", minutesLeft, secondsLeft));
         } else {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     timeElasped.setText(String.format("%02d:%02d", minutes, seconds));
+                    timeLeft.setText(String.format("%02d:%02d", minutesLeft, secondsLeft));
+                    seekBar.setProgress(currentSong.getCurrentPosition());
                 }
             });
         }
@@ -120,6 +165,8 @@ public class MainActivity extends AppCompatActivity
 
         currentSong.playSong(getApplicationContext());
         playPauseButton.setImageResource(R.drawable.pause_button);
+
+        seekBar.setMax(currentSong.getDuration());
         handler = new TimeElaspedHandler(this, currentSong);
     }
 
@@ -131,14 +178,14 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void skipForward(View view) {
+    public void skipForward() {
         if (nextSong != null) {
             handler.stopHandler();
             play(songList.indexOf(nextSong));
         }
     }
 
-    public void skipBackward(View view) {
+    public void skipBackward() {
         if (prevSong != null) {
             handler.stopHandler();
             play(songList.indexOf(prevSong));

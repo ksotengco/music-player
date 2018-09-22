@@ -33,7 +33,7 @@ public class TimeElaspedHandler {
         rateLimitRequest = new Runnable() {
             @Override
             public void run() {
-                int seconds = currentSong.getDuration();
+                int seconds = currentSong.getCurrentPosition();
                 // Handlers usually communicate with message queues, but this is simpler
                 iUpdate.updateTimeElasped(seconds);
                 handler.postDelayed(this, rateLimitMillis);

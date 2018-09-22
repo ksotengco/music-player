@@ -46,6 +46,17 @@ public class Song implements SongManager {
             }
             isPaused = !isPaused;
         }
+
+        songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                System.out.println("finished playing");
+            }
+        });
+    }
+
+    public void changeProgress (int progress) {
+        songPlayer.seekTo(progress * 1000);
     }
 
     public void stopSong() {
@@ -57,5 +68,6 @@ public class Song implements SongManager {
 
     String getSongTitle() { return songTitle; }
     int getSongID() { return songID; }
-    int getDuration () { return songPlayer.getCurrentPosition()/1000; }
+    int getCurrentPosition () { return songPlayer.getCurrentPosition()/1000; }
+    int getDuration () { return songPlayer.getDuration()/1000; }
 }
