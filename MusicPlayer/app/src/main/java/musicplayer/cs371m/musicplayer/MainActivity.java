@@ -17,7 +17,8 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+                          implements TimeElaspedHandler.IUpdate {
     static private ArrayList<Song> songList = new ArrayList<>();
     private ListView listView;
 
@@ -28,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView currentSongText;
     private TextView nextSongText;
+
+    private TextView timeElasped;
+    private TimeElaspedHandler handler;
 
     private ImageButton playPauseButton;
 
@@ -49,16 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        currentSongText = (TextView) findViewById(R.id.current_song_text);
-        nextSongText    = (TextView) findViewById(R.id.next_song_text);
-
-        playPauseButton = (ImageButton) findViewById(R.id.play_button);
-
+        init();
         play(0);
 
         listView = (ListView) findViewById(R.id.song_list);
@@ -73,6 +68,35 @@ public class MainActivity extends AppCompatActivity {
                 play(i);
             }
         });
+    }
+
+    public void init() {
+        setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        currentSongText = (TextView) findViewById(R.id.current_song_text);
+        nextSongText    = (TextView) findViewById(R.id.next_song_text);
+
+        playPauseButton = (ImageButton) findViewById(R.id.play_button);
+
+        timeElasped     = (TextView) findViewById(R.id.time_passed);
+    }
+
+    public void updateTimeElasped(final int timeValue) {
+        final int minutes = timeValue/60;
+        final int seconds = timeValue%60;
+        if (false) {
+            timeElasped.setText(String.format("%02d:%02d", minutes, seconds));
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    timeElasped.setText(String.format("%02d:%02d", minutes, seconds));
+                }
+            });
+        }
     }
 
     public void play (int songNum) {
@@ -96,27 +120,36 @@ public class MainActivity extends AppCompatActivity {
 
         currentSong.playSong(getApplicationContext());
         playPauseButton.setImageResource(R.drawable.pause_button);
+        handler = new TimeElaspedHandler(this, currentSong);
     }
 
     public void pausePlay (View view) {
         if (currentSong != null) {
             System.out.println("Click");
+            handler.togglePause();
             manager.updateSong(view);
         }
     }
 
     public void skipForward(View view) {
-        play(songList.indexOf(nextSong));
+        if (nextSong != null) {
+            handler.stopHandler();
+            play(songList.indexOf(nextSong));
+        }
     }
 
     public void skipBackward(View view) {
-        play(songList.indexOf(prevSong));
+        if (prevSong != null) {
+            handler.stopHandler();
+            play(songList.indexOf(prevSong));
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if (currentSong != null) {
+            System.out.println("leaving");
             manager.stopSong();
         }
     }

@@ -27,22 +27,22 @@ public class Song implements SongManager {
     public void playSong(Context context) {
         if (songPlayer != null) {
             System.out.println("freeing");
-            songPlayer.release();
+            stopSong();
         }
         songPlayer = MediaPlayer.create(context, songID);
         songPlayer.start();
-        isPaused = true;
+        isPaused = false;
     }
 
     public void updateSong(View view) {
         if (songPlayer != null) {
             ImageButton playPauseButton = (ImageButton)  view.findViewById(R.id.play_button);
             if (isPaused) {
-                songPlayer.pause();
-                playPauseButton.setImageResource(R.drawable.play_button);
-            } else {
                 songPlayer.start();
                 playPauseButton.setImageResource(R.drawable.pause_button);
+            } else {
+                songPlayer.pause();
+                playPauseButton.setImageResource(R.drawable.play_button);
             }
             isPaused = !isPaused;
         }
@@ -50,9 +50,12 @@ public class Song implements SongManager {
 
     public void stopSong() {
         songPlayer.stop();
+        songPlayer.reset();
         songPlayer.release();
+        songPlayer = null;
     }
 
     String getSongTitle() { return songTitle; }
     int getSongID() { return songID; }
+    int getDuration () { return songPlayer.getCurrentPosition()/1000; }
 }
