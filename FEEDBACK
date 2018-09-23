@@ -1,0 +1,53 @@
+Rubic
+===================================================
+1pt - readme
+
+UI: 11 pt
+1pt - ListView
+1pt - TextView of current song
+1pt - TextView of next song
+1pt - slider
+1pt - TextView on how long a song has been played in the format MM:SS
+1pt - TextView on remaining time in the format MM:SS
+1pt - play/pause button
+1pt - skip forward and skip backward button
+1pt - loop mode switch
+1pt - cancel button
+1pt - ok button
+
+Functionality: 37
+(Initialization)
+2pt - Automatically play the first song when app starts
+2pt - If a song is playing and the activity is paused/settings activity is invoked, you can either keep playing the song or pause the song and resume playing when the main activity comes back.
+
+(List)
+2pt - When a song in this list is tapped by a user it should be played
+2pt - Skip forward on last song plays the first song in the list
+2pt - Skip backward on first song plays the last song in the list
+2pt - When a song finishes, the next song in the list should be played
+(Slider)
+3pt - slider is automatically updated as the song plays
+3pt - song skips to the appropriate position if the user drags the slider
+(play/pause button)
+1pt - press button plays/pauses the music
+1pt - button switches between the play and pause symbol
+(skip forward and backward)
+1pt - Pressing skip forward plays next song
+1pt - Pressing skip backward plays previous song
+1pt - TextView updates the current song and next song when they change
+(loop mode)
+3pt - Looping the current song.
+2pt - after skip forward/backward should maintain looping
+(Setting's Activity)
+2pt - values displayed should mirror the current settings of the app
+(Cancel Button)
+2pt - Discards any modification
+(OK Button)
+2pt - Uses modification
+
+3pt - The song should play correctly.
+
+Total: 49
+===================================================
+comments: 
+49
